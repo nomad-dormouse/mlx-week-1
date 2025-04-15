@@ -31,7 +31,10 @@ data/
 data/**/*.csv
 data/**/*.pkl
 data/**/*.npy
+data/**/*.txt
+data/**/*.json
 data/text8
+data/text8.txt
 data/text8.zip
 data/tokenized/
 

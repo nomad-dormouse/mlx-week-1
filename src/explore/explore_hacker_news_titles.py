@@ -1,30 +1,22 @@
 #!/usr/bin/env python
-# Explore the text8 dataset
+# Explore the Hacker News titles dataset
 
 import os
-import argparse
 from collections import Counter
 
 # Fix import issue by using relative import path
 try:
-    from src.config import (
-        TEXT8_DATASET_PATH
-    )
+    from src.config import HACKER_NEWS_TITLES_PATH
 except ModuleNotFoundError:
     # When running as a script directly
-    from config import (
-        TEXT8_DATASET_PATH
-    )
+    from config import HACKER_NEWS_TITLES_PATH
 
-def explore_text8(data_path, preview_chars=1000, vocab_size=100):
-    """
-    Explore the text8 dataset with basic statistics and content preview.
+def explore_hacker_news_titles():
+    """Display basic statistics and preview of the Hacker News titles dataset"""
+    data_path = HACKER_NEWS_TITLES_PATH
+    preview_chars = 500
+    vocab_size = 20
     
-    Args:
-        data_path (str): Path to the text8 file
-        preview_chars (int): Number of characters to preview
-        vocab_size (int): Number of most common words to display
-    """
     if not os.path.exists(data_path):
         print(f"Error: File not found at {data_path}")
         return
@@ -54,20 +46,29 @@ def explore_text8(data_path, preview_chars=1000, vocab_size=100):
     print(text[:preview_chars])
     print("-" * 50)
     
+    # Count word occurrences
+    word_counts = Counter(words)
+    
+    # Word length distribution
+    word_lengths = [len(word) for word in set(words)]
+    avg_word_length = sum(word_lengths) / len(word_lengths)
+    print(f"\nAverage word length: {avg_word_length:.2f} characters")
+    
     # Most common words
     print(f"\nTop {vocab_size} most common words:")
-    word_counts = Counter(words)
     for word, count in word_counts.most_common(vocab_size):
         print(f"{word}: {count:,}")
+    
+    # Least common words
+    print(f"\nTop {vocab_size} least common words:")
+    for word, count in word_counts.most_common()[:-vocab_size-1:-1]:
+        print(f"{word}: {count:,}")
+    
+    # Long words (more than 10 characters)
+    long_words = [word for word in set(words) if len(word) > 10]
+    print(f"\nSample of long words (>10 chars, {len(long_words)} total):")
+    for word in sorted(long_words, key=len, reverse=True)[:10]:
+        print(f"{word} ({len(word)} chars): {word_counts[word]:,} occurrences")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Explore the text8 dataset")
-    parser.add_argument("--data_path", type=str, default=TEXT8_DATASET_PATH, 
-                        help="Path to the text8 file")
-    parser.add_argument("--preview_chars", type=int, default=1000,
-                        help="Number of characters to preview")
-    parser.add_argument("--vocab_size", type=int, default=20,
-                        help="Number of most common words to display")
-    
-    args = parser.parse_args()
-    explore_text8(args.data_path, args.preview_chars, args.vocab_size) 
+    explore_hacker_news_titles() 
