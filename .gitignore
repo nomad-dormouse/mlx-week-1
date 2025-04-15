@@ -19,25 +19,58 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
 
 # Project specific
 data/
+data/**/*.csv
+data/**/*.pkl
+data/**/*.npy
+data/text8
+data/text8.zip
+data/tokenized/
 
 # Virtual Environment
 venv/
 .venv/
 ENV/
+env/
+env.bak/
+venv.bak/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+.spyderproject
+.spyproject
+.ropeproject
+.project
+.pydevproject
 
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # Jupyter Notebook
-.ipynb_checkpoints 
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs/
+*.log 

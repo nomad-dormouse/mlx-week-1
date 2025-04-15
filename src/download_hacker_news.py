@@ -6,6 +6,19 @@ import time
 import backoff  # You may need to install this: pip install backoff
 import traceback
 
+# Fix import issue by using relative import path
+try:
+    from src.config import (
+        DATA_DIR, HACKER_NEWS_DATASET_PATH, DB_CONNECTION_STRING, 
+        BATCH_SIZE, ensure_directories
+    )
+except ModuleNotFoundError:
+    # When running as a script directly
+    from config import (
+        DATA_DIR, HACKER_NEWS_DATASET_PATH, DB_CONNECTION_STRING, 
+        BATCH_SIZE, ensure_directories
+    )
+
 # Set up basic logging
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +30,7 @@ logger = logging.getLogger(__name__)
 def get_db_engine():
     """Create a database engine with optimized connection settings."""
     # Database connection string with timeout parameters
-    connection_string = "postgresql://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki"
+    connection_string = DB_CONNECTION_STRING
     
     # Create engine with connection pooling and longer timeouts
     engine = create_engine(
@@ -53,7 +66,7 @@ def execute_query(query, engine=None):
             engine.dispose()
             logger.info("Database connection closed")
 
-def fetch_data_in_batches(output_file, batch_size=10000, max_batches=None):
+def fetch_data_in_batches(output_file=HACKER_NEWS_DATASET_PATH, batch_size=BATCH_SIZE, max_batches=None):
     """Fetch the entire joined dataset in batches and write directly to CSV."""
     # Base query for the joined tables
     base_query = """
@@ -79,8 +92,8 @@ def fetch_data_in_batches(output_file, batch_size=10000, max_batches=None):
         AND i.title IS NOT NULL
     """
     
-    # Create output directory if it doesn't exist
-    os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+    # Ensure directories exist
+    ensure_directories()
     
     engine = get_db_engine()
     
@@ -170,10 +183,9 @@ def fetch_data_in_batches(output_file, batch_size=10000, max_batches=None):
         logger.info("Database connection closed")
 
 def run_extraction():
-    output_file = os.path.join('data', 'hacker_news_complete.csv')
     try:
-        total_rows = fetch_data_in_batches(output_file, batch_size=20000)
-        logger.info(f"Successfully extracted {total_rows} rows to {output_file}")
+        total_rows = fetch_data_in_batches()
+        logger.info(f"Successfully extracted {total_rows} rows to {HACKER_NEWS_DATASET_PATH}")
         return total_rows
     except Exception as e:
         logger.error(f"Extraction failed: {str(e)}")
